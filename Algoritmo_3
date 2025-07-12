@@ -1,126 +1,75 @@
-def block_partition(A, l, r, pivot, B, step_counter):
+def block_partition(A, B, l, r, pivot, counters):
     offsetsL = [0] * B
     offsetsR = [0] * B
     startL, startR, numL, numR = 0, 0, 0, 0
-
-    step_counter['total'] += 1
-    print(f"\n--- Passo {step_counter['total']}: Iniciando particionamento (pivô = {pivot}, bloco B = {B}) ---")
-    print(f"Subarray inicial: {A[l:r+1]} (índices {l} a {r})")
-
-    while (r - l + 1) > 2 * B:
+    
+    while r - l + 1 > 2 * B:  # Loop principal
+        # Preenchimento do buffer esquerdo
         if numL == 0:
-            step_counter['scan_left'] += 1
-            step_counter['total'] += 1
-            print(f"\nPasso {step_counter['total']}: [Fase de varredura ESQUERDA]")
-            print(f"Buffer esquerdo vazio. Varrendo bloco {A[l:l+B]}...")
             startL = 0
             for i in range(B):
-                offsetsL[numL] = i
-                condicao = pivot >= A[l + i]
-                numL += condicao
-                step_counter['comparisons'] += 1
-                print(f"  Passo {step_counter['total']}.{i+1}: Elemento {A[l + i]} (índice {l + i}): {'>= pivô' if condicao else '< pivô'} → offsetsL = {offsetsL[:numL]}")
-            if numL == 0:
-                step_counter['moves'] += B
-                print(f"  Passo {step_counter['total']}.X: Todos elementos < pivô. Avançando ponteiro esquerdo em +B.")
-                l += B
-
+                if l + i <= r:  # Verifica limite do array
+                    counters['comparacoes'] += 1
+                    if A[l + i] <= pivot:
+                        offsetsL[numL] = i
+                        numL += 1
+        
+        # Preenchimento do buffer direito
         if numR == 0:
-            step_counter['scan_right'] += 1
-            step_counter['total'] += 1
-            print(f"\nPasso {step_counter['total']}: [Fase de varredura DIREITA]")
-            print(f"Buffer direito vazio. Varrendo bloco {A[r-B+1:r+1]}...")
             startR = 0
             for i in range(B):
-                offsetsR[numR] = i
-                condicao = pivot <= A[r - i]
-                numR += condicao
-                step_counter['comparisons'] += 1
-                print(f"  Passo {step_counter['total']}.{i+1}: Elemento {A[r - i]} (índice {r - i}): {'<= pivô' if condicao else '> pivô'} → offsetsR = {offsetsR[:numR]}")
-            if numR == 0:
-                step_counter['moves'] += B
-                print(f"  Passo {step_counter['total']}.X: Todos elementos > pivô. Recuando ponteiro direito em -B.")
-                r -= B
-
+                if r - i >= l:  # Verifica limite do array
+                    counters['comparacoes'] += 1
+                    if A[r - i] >= pivot:
+                        offsetsR[numR] = i
+                        numR += 1
+        
+        # Número de trocas a serem feitas neste passo
         num = min(numL, numR)
-        if num > 0:
-            step_counter['swaps'] += num
-            step_counter['total'] += 1
-            print(f"\nPasso {step_counter['total']}: [Fase de rearranjo]")
-            print(f"  Troca {num} pares:")
-            for j in range(num):
-                idxL = l + offsetsL[startL + j]
-                idxR = r - offsetsR[startR + j]
-                print(f"    Passo {step_counter['total']}.{j+1}: Trocando A[{idxL}]={A[idxL]} (>= pivô) ↔ A[{idxR}]={A[idxR]} (<= pivô)")
-                A[idxL], A[idxR] = A[idxR], A[idxL]
-            print(f"  Array após trocas: {A}")
-
+        
+        # Realiza as trocas
+        for j in range(num):
+            left_idx = l + offsetsL[startL + j]
+            right_idx = r - offsetsR[startR + j]
+            A[left_idx], A[right_idx] = A[right_idx], A[left_idx]
+            counters['trocas'] += 1
+        
+        # Atualiza contadores
         numL -= num
         numR -= num
         startL += num
         startR += num
+        
+        # Atualiza limites se buffers esgotados
+        if numL == 0:
+            l += B
+        if numR == 0:
+            r -= B
+    
+    # Processa elementos restantes (varredura tradicional)
+    i = l
+    for j in range(l, r + 1):
+        counters['comparacoes'] += 1
+        if A[j] <= pivot:
+            if i != j:
+                A[i], A[j] = A[j], A[i]
+                counters['trocas'] += 1
+            i += 1
+    
+    return i - 1  # Retorna a posição final do pivô
 
-    step_counter['hoare'] += 1
-    step_counter['total'] += 1
-    print(f"\nPasso {step_counter['total']}: [Fase final - Particionamento de Hoare]")
-    print(f"Elementos restantes: {A[l:r+1]} (índices {l} a {r})")
-    while l <= r:
-        while A[l] < pivot:
-            l += 1
-            step_counter['comparisons'] += 1
-        while A[r] > pivot:
-            r -= 1
-            step_counter['comparisons'] += 1
-        if l <= r:
-            step_counter['swaps'] += 1
-            print(f"  Passo {step_counter['total']}.X: Trocando A[{l}]={A[l]} (>= pivô) ↔ A[{r}]={A[r]} (<= pivô)")
-            A[l], A[r] = A[r], A[l]
-            l += 1
-            r -= 1
-    print(f"Array após particionamento final: {A}")
-    print(f"Índice de partição: {l}")
-    return l
-
-def block_quicksort(A, l, r, B, step_counter):
-    if l < r:
-        step_counter['recursions'] += 1
-        pivot = A[(l + r) // 2]
-        step_counter['total'] += 1
-        print(f"\nPasso {step_counter['total']}: === NOVA CHAMADA RECURSIVA (subarray {A[l:r+1]}) ===")
-        print(f"Pivô escolhido: {pivot}")
-
-        partition_idx = block_partition(A, l, r, pivot, B, step_counter)
-
-        block_quicksort(A, l, partition_idx - 1, B, step_counter)
-        block_quicksort(A, partition_idx, r, B, step_counter)
-
-def print_step_summary(step_counter):
-    print("\n--- RESUMO DE PASSOS ---")
-    print(f"Total de passos: {step_counter['total']}")
-    print(f"Varreduras à esquerda: {step_counter['scan_left']}")
-    print(f"Varreduras à direita: {step_counter['scan_right']}")
-    print(f"Comparações: {step_counter['comparisons']}")
-    print(f"Trocas: {step_counter['swaps']}")
-    print(f"Movimentos de ponteiro: {step_counter['moves']}")
-    print(f"Particionamentos Hoare: {step_counter['hoare']}")
-    print(f"Chamadas recursivas: {step_counter['recursions']}")
-
+# --- Exemplo de uso ---
 if __name__ == "__main__":
-    A = [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
-    B = 4  # Reduzi para 4 para melhor visualização
-    step_counter = {
-        'total': 0,
-        'scan_left': 0,
-        'scan_right': 0,
-        'comparisons': 0,
-        'swaps': 0,
-        'moves': 0,
-        'hoare': 0,
-        'recursions': 0
-    }
-
-    print("Array original:", A)
-    block_quicksort(A, 0, len(A) - 1, B, step_counter)
-    print("\n--- ARRAY ORDENADO ---")
-    print(A)
-    print_step_summary(step_counter)
+    arr =  [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
+    pivot = 4  # Valor do pivô 
+    B = 32  # Tamanho do bloco (pode ser ajustado)
+    l, r = 0, len(arr) - 1
+    counters = {'trocas': 0, 'comparacoes': 0}
+    
+    print("Array antes do particionamento:", arr)
+    final_pos = block_partition(arr, l, r, pivot, counters)
+    
+    print("Array após particionamento:", arr)
+    print("Posição final do particionamento:", final_pos)
+    print("Número de trocas:", counters['trocas'])
+    print("Número de comparações:", counters['comparacoes'])
