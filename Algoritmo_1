@@ -2,33 +2,33 @@
 def quicksort(arr, inicio=0, fim=None, contador={'trocas': 0, 'comparacoes': 0}):
     if fim is None:
         fim = len(arr) - 1
-    
+
     if inicio < fim:
         # Particiona o array e obtém o índice do pivô
         pivo_idx = particiona(arr, inicio, fim, contador)
-        
+
         # Ordena recursivamente os subarrays esquerdo e direito
         quicksort(arr, inicio, pivo_idx - 1, contador)
         quicksort(arr, pivo_idx + 1, fim, contador)
-    
+
     return contador
 
 def particiona(arr, inicio, fim, contador):
     pivo = arr[fim]
     i = inicio
-    
+
     for j in range(inicio, fim):
         # Incrementa o contador de comparações
         contador['comparacoes'] += 1
-        
+
         if arr[j] <= pivo:
             # Incrementa o contador de trocas
             contador['trocas'] += 1
             arr[i], arr[j] = arr[j], arr[i]
             i += 1
-    
+
     # Troca o pivô para a posição correta
     contador['trocas'] += 1
     arr[i], arr[fim] = arr[fim], arr[i]
-    
+
     return i
