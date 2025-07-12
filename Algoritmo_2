@@ -1,26 +1,44 @@
-#Particionamento de Hoare
 def hoare_partition(A, left, right, pivot):
     swaps = 0
     comparisons = 0
     
     while left <= right:
-        # Incrementa comparação: A[left] < pivot
         comparisons += 1
         while A[left] < pivot:
             left += 1
-            comparisons += 1  # Nova comparação a cada iteração
+            comparisons += 1
         
-        # Incrementa comparação: A[right] > pivot
         comparisons += 1
         while A[right] > pivot:
             right -= 1
-            comparisons += 1  # Nova comparação a cada iteração
+            comparisons += 1
         
         if left <= right:
-            # Troca os elementos fora de lugar
             A[left], A[right] = A[right], A[left]
             swaps += 1
             left += 1
             right -= 1
     
-    return left, swaps, comparisons  # Retorna o ponto de divisão, trocas e comparações
+    return left, swaps, comparisons
+
+def hoare_sort(A, left=0, right=None, counters=None):
+    if counters is None:
+        counters = {'swaps': 0, 'comparisons': 0}
+    
+    if right is None:
+        right = len(A) - 1
+    
+    if left < right:
+        # Escolhe o pivô (usando o elemento do meio para evitar pior caso)
+        pivot = A[(left + right) // 2]
+        
+        # Particiona o array
+        partition_point, swaps, comparisons = hoare_partition(A, left, right, pivot)
+        counters['swaps'] += swaps
+        counters['comparisons'] += comparisons
+        
+        # Ordena recursivamente as duas partições
+        hoare_sort(A, left, partition_point - 1, counters)
+        hoare_sort(A, partition_point, right, counters)
+    
+    return counters
