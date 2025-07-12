@@ -1,1 +1,37 @@
+def hoare_partition(A, left, right, pivot):
+    swaps = 0
+    comparisons = 0
+    
+    while left <= right:
+        # Incrementa comparação: A[left] < pivot
+        comparisons += 1
+        while A[left] < pivot:
+            left += 1
+            comparisons += 1  # Nova comparação a cada iteração
+        
+        # Incrementa comparação: A[right] > pivot
+        comparisons += 1
+        while A[right] > pivot:
+            right -= 1
+            comparisons += 1  # Nova comparação a cada iteração
+        
+        if left <= right:
+            # Troca os elementos fora de lugar
+            A[left], A[right] = A[right], A[left]
+            swaps += 1
+            left += 1
+            right -= 1
+    
+    return left, swaps, comparisons  # Retorna o ponto de divisão, trocas e comparações
 
+# --- Exemplo de uso ---
+if __name__ == "__main__":
+    arr = [5, 3, 8, 4, 2, 7, 1, 10]
+    pivot = 4
+    
+    print("Array antes:", arr)
+    partition_point, total_swaps, total_comparisons = hoare_partition(arr, 0, len(arr)-1, pivot)
+    print("Array depois:", arr)
+    print("Ponto de divisão:", partition_point)
+    print("Trocas realizadas:", total_swaps)
+    print("Comparações realizadas:", total_comparisons)
