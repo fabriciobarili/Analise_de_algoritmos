@@ -34,7 +34,7 @@ def particiona(arr, inicio, fim, contador):
 
 # Exemplo de uso
 if __name__ == "__main__":
-    arr = [10, 7, 8, 9, 1, 5]
+    arr = [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
     print("Array original:", arr)
     
     contador = quicksort(arr.copy())  # Usamos copy() para não alterar o original
