@@ -1,3 +1,4 @@
+#QuickSort
 def quicksort(arr, inicio=0, fim=None, contador={'trocas': 0, 'comparacoes': 0}):
     if fim is None:
         fim = len(arr) - 1
@@ -31,14 +32,3 @@ def particiona(arr, inicio, fim, contador):
     arr[i], arr[fim] = arr[fim], arr[i]
     
     return i
-
-# Exemplo de uso
-if __name__ == "__main__":
-    arr = [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
-    print("Array original:", arr)
-    
-    contador = quicksort(arr.copy())  # Usamos copy() para não alterar o original
-    
-    print("Array ordenado:", arr)
-    print("Número de trocas:", contador['trocas'])
-    print("Número de comparações:", contador['comparacoes'])
