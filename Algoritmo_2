@@ -1,3 +1,4 @@
+#Particionamento de Hoare
 def hoare_partition(A, left, right, pivot):
     swaps = 0
     comparisons = 0
@@ -23,15 +24,3 @@ def hoare_partition(A, left, right, pivot):
             right -= 1
     
     return left, swaps, comparisons  # Retorna o ponto de divisão, trocas e comparações
-
-# --- Exemplo de uso ---
-if __name__ == "__main__":
-    arr = [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
-    pivot = 4
-    
-    print("Array antes:", arr)
-    partition_point, total_swaps, total_comparisons = hoare_partition(arr, 0, len(arr)-1, pivot)
-    print("Array depois:", arr)
-    print("Ponto de divisão:", partition_point)
-    print("Trocas realizadas:", total_swaps)
-    print("Comparações realizadas:", total_comparisons)
