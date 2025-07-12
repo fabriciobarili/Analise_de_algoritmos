@@ -26,7 +26,7 @@ def hoare_partition(A, left, right, pivot):
 
 # --- Exemplo de uso ---
 if __name__ == "__main__":
-    arr = [5, 3, 8, 4, 2, 7, 1, 10]
+    arr = [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
     pivot = 4
     
     print("Array antes:", arr)
