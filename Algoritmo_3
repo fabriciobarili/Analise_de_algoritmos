@@ -3,12 +3,12 @@ def block_partition(A, B, l, r, pivot, counters):
     offsetsR = [0] * B
     startL, startR, numL, numR = 0, 0, 0, 0
     
-    while r - l + 1 > 2 * B:  # Loop principal
+    while r - l + 1 > 2 * B:
         # Preenchimento do buffer esquerdo
         if numL == 0:
             startL = 0
             for i in range(B):
-                if l + i <= r:  # Verifica limite do array
+                if l + i <= r:
                     counters['comparacoes'] += 1
                     if A[l + i] <= pivot:
                         offsetsL[numL] = i
@@ -18,16 +18,14 @@ def block_partition(A, B, l, r, pivot, counters):
         if numR == 0:
             startR = 0
             for i in range(B):
-                if r - i >= l:  # Verifica limite do array
+                if r - i >= l:
                     counters['comparacoes'] += 1
                     if A[r - i] >= pivot:
                         offsetsR[numR] = i
                         numR += 1
         
-        # Número de trocas a serem feitas neste passo
+        # Realiza as trocas em bloco
         num = min(numL, numR)
-        
-        # Realiza as trocas
         for j in range(num):
             left_idx = l + offsetsL[startL + j]
             right_idx = r - offsetsR[startR + j]
@@ -40,13 +38,13 @@ def block_partition(A, B, l, r, pivot, counters):
         startL += num
         startR += num
         
-        # Atualiza limites se buffers esgotados
+        # Atualiza limites
         if numL == 0:
             l += B
         if numR == 0:
             r -= B
     
-    # Processa elementos restantes (varredura tradicional)
+    # Processamento tradicional dos elementos restantes
     i = l
     for j in range(l, r + 1):
         counters['comparacoes'] += 1
@@ -56,4 +54,35 @@ def block_partition(A, B, l, r, pivot, counters):
                 counters['trocas'] += 1
             i += 1
     
-    return i - 1  # Retorna a posição final do pivô
+    return i - 1
+
+def block_quicksort(A, B=32, l=0, r=None, counters=None):
+    if counters is None:
+        counters = {'trocas': 0, 'comparacoes': 0}
+    
+    if r is None:
+        r = len(A) - 1
+    
+    if l < r:
+        # Escolha do pivô (mediana de três para melhor desempenho)
+        mid = (l + r) // 2
+        if A[l] > A[mid]:
+            A[l], A[mid] = A[mid], A[l]
+            counters['trocas'] += 1
+        if A[l] > A[r]:
+            A[l], A[r] = A[r], A[l]
+            counters['trocas'] += 1
+        if A[mid] > A[r]:
+            A[mid], A[r] = A[r], A[mid]
+            counters['trocas'] += 1
+        pivot = A[mid]
+        counters['comparacoes'] += 3
+        
+        # Particiona o array
+        p = block_partition(A, B, l, r, pivot, counters)
+        
+        # Ordena recursivamente as partições
+        block_quicksort(A, B, l, p, counters)
+        block_quicksort(A, B, p + 1, r, counters)
+    
+    return counters
