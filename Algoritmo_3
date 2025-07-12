@@ -57,19 +57,3 @@ def block_partition(A, B, l, r, pivot, counters):
             i += 1
     
     return i - 1  # Retorna a posição final do pivô
-
-# --- Exemplo de uso ---
-if __name__ == "__main__":
-    arr =  [3, 6, 2, 8, 5, 1, 7, 4, 9, 0, 10, 12, 99, 14, 21, 66, 77]
-    pivot = 4  # Valor do pivô 
-    B = 32  # Tamanho do bloco (pode ser ajustado)
-    l, r = 0, len(arr) - 1
-    counters = {'trocas': 0, 'comparacoes': 0}
-    
-    print("Array antes do particionamento:", arr)
-    final_pos = block_partition(arr, l, r, pivot, counters)
-    
-    print("Array após particionamento:", arr)
-    print("Posição final do particionamento:", final_pos)
-    print("Número de trocas:", counters['trocas'])
-    print("Número de comparações:", counters['comparacoes'])
